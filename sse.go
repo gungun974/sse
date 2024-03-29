@@ -77,7 +77,11 @@ func (im *ImplServerSideEventsServer) HandleSSE(w http.ResponseWriter, r *http.R
 	for {
 		select {
 		case data := <-sseClient:
-			if data.Topic == topic {
+			if topic == "" {
+				fmt.Fprintf(w, "event: %s:%s\n", data.Topic, data.Event)
+				fmt.Fprintf(w, "data: %s\n\n", data.Data)
+				flusher.Flush()
+			} else if data.Topic == topic {
 				fmt.Fprintf(w, "event: %s\n", data.Event)
 				fmt.Fprintf(w, "data: %s\n\n", data.Data)
 				flusher.Flush()
